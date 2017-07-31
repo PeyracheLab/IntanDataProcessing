@@ -1,0 +1,15 @@
+% How to use it:
+% create a folder whose name is typically Animal-YYMMDD
+% This folder should contain the successive Intan recordings of the day
+% Launch MasterPreProcessing_Intan
+% You should get data ready to be manually spike sorted soon!
+%
+% USAGE: MasterPreProcessing_Intan(fbasename)
+% where fbasename is the base name of the Intan recording (everything until
+%         the last '_', e.g. 'MouseXXX_YYMMDD')
+
+%Adrien Peyrache, 2017
+
+function MasterPreProcessing_Intan(fbasename)
+
+Process_Intan2KiloSort(fbasename)
