@@ -19,8 +19,8 @@ function [returnVar,msg] = Process_NewReference(fname,nbChan,refChan,rerefChan)
 
 %Parameters
 fs = 20000; %sampling frequency
-fc = 600; %high-pass cut-off frequency
-saveCopy = 1;
+fc = 100; %high-pass cut-off frequency
+saveCopy = 0;
 
 if ~strcmp(fname(end-2:end),'dat')
     fname = [fname '.dat'];
@@ -63,7 +63,6 @@ end
         end
         close(h)
 
-
         newchunk = infoFile.bytes/(2*nbChan)-nbChunks*chunk;
 
         if newchunk
@@ -103,6 +102,7 @@ function dout = gaussFilter(d,fs,fc)
     sigma   = fs./(2*pi*fc);
     N       = round(10*sigma);
     gw      = gausswin(N,5);
+    gw      = gw/sum(gw);
     dout    = convn(d,gw,'same');
 
 end

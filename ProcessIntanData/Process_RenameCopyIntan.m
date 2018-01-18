@@ -60,7 +60,7 @@ for ii=1:nRec
         recName = [recName;{fname}];
         k = strfind(fname,'_');
         date = [date;str2num(fname(k(end-1)+1:k(end)-1))];
-        startTime = [startTime;str2num(fname(k(end)+1:end))];
+        startTime = [startTime;str2num(fname(k(end)+1:k(end)+6))];
     else
         warning('not a folder')
     end

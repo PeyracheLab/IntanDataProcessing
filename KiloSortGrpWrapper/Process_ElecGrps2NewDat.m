@@ -36,8 +36,9 @@ fid = fopen(newName,'w');
             chunk = infoFile.bytes/(nbChan*2);
         end
         
+        %h = waitbar;
         for ix=0:nbChunks-1
-            h = waitbar(ix/nbChunks);
+            %h = waitbar(ix/nbChunks);
             m = memmapfile(datFile,'Format','int16','Offset',ix*chunk*nbChan*2,'Repeat',chunk*nbChan,'writable',false);
             d = m.Data;
             d = double(reshape(d,[nbChan chunk]));
@@ -46,7 +47,7 @@ fid = fopen(newName,'w');
             fwrite(fid,grpDat(:),'int16');
             clear d m
         end
-        close(h)
+        %close(h)
         
         newchunk = infoFile.bytes/(2*nbChan)-nbChunks*chunk;
 

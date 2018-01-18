@@ -12,17 +12,26 @@
 
 %Adrien Peyrache, 2017
 
-function MasterPreProcessing_Intan(fbasename)
+function MasterPreProcessing_Intan(fbasename,varargin)
 
 mergename = Process_Intan2ConcatenateDat(fbasename);
 
 %Now we can cd to the new 'mergename' folder
 if ~exist(mergename,'dir')
-    warning(['Folder ' mergename ' has not been created!! Type ''dbquit'' to exit debugging mode')
+    warning(['Folder ' mergename ' has not been created!! Type ''dbquit'' to exit debugging mode'])
     keyboard
 end
 cd(mergename)
 
-Process_KiloSortGrp(mergename)
+disp('Renaming files DONE! Now KiloSort')
+if ~isempty(varargin)
+    Process_KiloSortGrp(mergename,varargin{1})
+else
+    Process_KiloSortGrp(mergename)
+end
+
+%Give writing access to all members of the 'datausers' group
+cmd = ['chown -R adrien.datausers ' mergename];
+system(cmd)
 
 %Add stuff relative to video here...

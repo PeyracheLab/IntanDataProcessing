@@ -55,28 +55,28 @@ channellist = 1:nElec;
     
     spkname     = fullfile(savepath, [basename '.spk.' num2str(grp)]);
     fid         = fopen(spkname,'w'); 
-    %chunkSize   = 100;
-    %nbChunk     = floor(length(spktimes))/chunkSize;
-    %remChunk    = length(spktimes) - floor(length(spktimes));
+    chunkSize   = 100;
+    nbChunk     = floor(length(spktimes))/chunkSize;
+    remChunk    = length(spktimes) - floor(length(spktimes));
     
-    for j=1:length(spktimes)
-    %for j=1:nbChunk
-        %spkT    = double(spktimes((j-1)*chunkSize+1:j*chinkSize));
-        %ix      = (spkT(:)'-sbefore)*nElec;
-        %ix      = repmat(ix,[(sbefore+safter)*nElec 1])+repmat([1:(sbefore+safter)*nElec]',[1 nbChunk]);
-        %ix      = ix(:);
+    %for j=1:length(spktimes)
+    for j=1:nbChunk
+        spkT    = double(spktimes((j-1)*chunkSize+1:j*chinkSize));
+        ix      = (spkT(:)'-sbefore)*nElec;
+        ix      = repmat(ix,[sbefore+safter 1])+repmat([1:sbefore+safter]',[1 nbChunk]);
+        ix      = ix(:);
         try
-            w       = dat.data((double(spktimes(j))-sbefore)*nElec+1:(double(spktimes(j))+safter)*nElec);
-            wvforms = reshape(w,nElec,[]);
-            wvforms = wvforms - repmat(median(wvforms')',1,sbefore+safter);
-            wvforms = wvforms(:);
-            %w       = dat.data(ix);
+            %w       = dat.data((double(spktimes(j))-sbefore)*nElec+1:(double(spktimes(j))+safter)*nElec);
             %wvforms = reshape(w,nElec,[]);
             %wvforms = wvforms - repmat(median(wvforms')',1,sbefore+safter);
             %wvforms = wvforms(:);
+            w       = dat.data(ix);
+            wvforms = reshape(w,nElec,[]);
+            wvforms = wvforms - repmat(median(wvforms')',1,sbefore+safter);
+            wvforms = wvforms(:);
             
         catch
-            %keyboard
+            keyboard
             %disp(['Error extracting spike at sample ' int2str(double(spktimes(j))) '. Saving as zeros']);
             disp(['Error extracting spikes']);
             %disp(['Time range of that spike was: ' num2str(double(spktimes(j))-sbefore) ' to ' num2str(double(spktimes(j))+safter) ' samples'])
