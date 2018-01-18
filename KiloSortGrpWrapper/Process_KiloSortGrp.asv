@@ -1,12 +1,7 @@
 function Process_KiloSortGrp(fbasename,varargin)
 
 % Process_KiloSortGrp - A wrapper for KiloSort using NeuroSuite data format.
-% Processes a dat file (requires also a xml file,
-% (http://neurosuite.sourceforge.net/)). Generate one sub-dat file per
-% electrode group (for faster processing if GPU card not recent enough or
-% for very long recordings) and output a rez.mat file in each subfolder (to
-% be used with phy) and files compatible with the NeuroSuite in the root
-% folder.
+% Processes a dat file (http://neurosuite.sourceforge.net/) and 
 % 
 %  USAGE
 %
@@ -17,16 +12,18 @@ function Process_KiloSortGrp(fbasename,varargin)
 %    WARNING:       the software assumes that there is also a file
 %    fbasename.xml in the folder. Otherwise, read http://neurosuite.sourceforge.net/
 %
+%
+%  OUTPUT
+%
+%    The function does not output any value, but 
+%
 
-
-% Copyright (C) 2017 by Adrien Peyrache, Sam McKenzie, Brendon Watson, Luke
-% Sjulson (and many other contributios from the Buzsaki Lab, NYU).
+% Copyright (C) 2004-2006 by Michaël Zugaro, adapted from Hajime Hirase, modified by A Peyrache
 %
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation; either version 2 of the License, or
 % (at your option) any later version.
-
 xmlFile = [fbasename '.xml'];
 
 par     = LoadXml(xmlFile);
