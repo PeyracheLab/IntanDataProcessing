@@ -46,9 +46,7 @@ channellist = 1:nElec;
 
     tsampsperwave   = (sbefore+safter);
     valsperwave     = tsampsperwave * nElec;
-    %wvforms_all     = zeros(length(spktimes)*tsampsperwave*nElec,1,'int16');
     wvranges        = zeros(length(spktimes),1);
-%    wvranges        = zeros(length(spktimes),nElec);
     wvpowers        = zeros(1,length(spktimes));
     
     %Writing spk files
@@ -161,7 +159,7 @@ channellist = 1:nElec;
     fetname = fullfile(savepath, [basename '.fet.' num2str(grp)]);
 
     %clu
-    tclu    = [length(unique(clu));double(clu)];
+    tclu    = [length(unique(clu));double(clu)+1];
     fid     = fopen(cluname,'w'); 
     fprintf(fid,'%.0f\n',tclu);
     fclose(fid);

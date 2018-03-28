@@ -4,9 +4,8 @@ function Process_KiloSortGrp(fbasename,varargin)
 % Processes a dat file (requires also a xml file,
 % (http://neurosuite.sourceforge.net/)). Generate one sub-dat file per
 % electrode group (for faster processing if GPU card not recent enough or
-% for very long recordings) and output a rez.mat file in each subfolder (to
-% be used with phy) and files compatible with the NeuroSuite in the root
-% folder.
+% for very long recordings) and output files for Phy in each subfolder 
+% and files compatible with the NeuroSuite in the root folder.
 % 
 %  USAGE
 %
@@ -20,7 +19,7 @@ function Process_KiloSortGrp(fbasename,varargin)
 
 
 % Copyright (C) 2017 by Adrien Peyrache, Sam McKenzie, Brendon Watson, Luke
-% Sjulson (and many other contributios from the Buzsaki Lab, NYU).
+% Sjulson (and many other contributions from the Buzsaki Lab, NYU).
 %
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -30,7 +29,7 @@ function Process_KiloSortGrp(fbasename,varargin)
 xmlFile = [fbasename '.xml'];
 
 par     = LoadXml(xmlFile);
-nbChan = par.nChannels;
+nbChan  = par.nChannels;
 
 if isempty(varargin)
     grpIx = 1:length(par.ElecGp);
@@ -41,8 +40,10 @@ end
 
 nbChan = par.nChannels;
 
+
 for elecGrp=1:length(grpIx)
 
+    tic
     elecIx = par.ElecGp{grpIx(elecGrp)}+1;
     nElec = length(elecIx);
 
@@ -52,19 +53,26 @@ for elecGrp=1:length(grpIx)
     end
     newDat = fullfile(newDir,[fbasename '_Grp' num2str(grpIx(elecGrp)) '.dat']);
     
-    Process_ElecGrps2NewDat(fbasename,newDat,nbChan,elecIx);
-    
-    %CreateChannelMap
-    createChannelMapFile_Grp(par,grpIx(elecGrp),newDir)
-
     ops = StandardConfig_GrpWrapper(newDat,par,nElec);
     if ops.GPU     
         disp('Initializing GPU')
         gpuDevice(1); % initialize GPU (will erase any existing GPU arrays)
     end
-
+    
     disp('Running Kilosort pipeline')
+    % This function creates a new dat file composed of only the signals
+    % from one electrode group (as defined in Neuroscope)
+    disp('Extracting signals from electrode group')
+    %Process_ElecGrps2NewDat(fbasename,newDat,nbChan,elecIx,'refchan',[1:64],'isGPU',ops.GPU);
+    Process_ElecGrps2NewDat(fbasename,newDat,nbChan,elecIx);
+    
+    % CreateChannelMap
+    createChannelMapFile_Grp(par,grpIx(elecGrp),newDir)
+
+    %Now this is a classical KiloSort pipeline
+    
     disp('PreprocessingData')
+    %slight modification of preprocessData
     [rez, DATA, uproj] = preprocessData_KSWrapper(ops); % preprocess data and extract spikes for initialization
 
     disp('Fitting templates')
@@ -73,6 +81,8 @@ for elecGrp=1:length(grpIx)
     disp('Extracting final spike times')
     rez = fullMPMU(rez, DATA); % extract final spike times (overlapping extraction)
 
+    t = toc;
+    disp(['Total spike sorting time: ' num2str(t)])
     rez.ops.basepath = pwd;
     rez.ops.basename = fbasename;
     rez.ops.savepath = '.';
@@ -81,12 +91,16 @@ for elecGrp=1:length(grpIx)
     save(fullfile(newDir,'rez.mat'), 'rez', '-v7.3');
     %% save python results file for Phy
     %disp('Converting to Phy format')
-    rezToPhy(rez,newDir);
+    %rezToPhy(rez,newDir);
     %% save python results file for Klusters
     %disp('Converting to Klusters format')
     ConvertKilosort2Neurosuite_GrpWrapper(rez,grpIx(elecGrp));
+    %We need to update the parameter defining the number of samples in
+    %spikes
     UpdateXml_SpkGrps([fbasename '.xml'])
+    
     %% Remove temporary file
-    delete(ops.fproc);
+    %delete(ops.fproc);
+    %delete(newDat)
     disp('Kilosort Processing complete')
 end    
