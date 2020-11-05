@@ -12,11 +12,11 @@
 
 %Adrien Peyrache, 2017
 
-function MasterPreProcessing_Intan(fbasename,varargin)
+function MasterPreProcessing_Intan2(fbasename,varargin)
 
-%% Message for slack
-%msg_starting = MakeSlackAttachment('New open task [urgent]: <link.to.website>', '', '', '#ff0000', {'KiloSort starting', ['doing animal ' fbasename]});
-%SendSlackNotification('https://hooks.slack.com/services/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', '', '#kilosort', 'Kilosort', 'http://www.icon.com/url/to/icon/image.png', [], msg_starting);
+% %% Message for slack
+% msg_starting = MakeSlackAttachment('New open task [urgent]: <link.to.website>', '', '', '#ff0000', {'KiloSort starting', ['doing animal ' fbasename]});
+% SendSlackNotification('https://hooks.slack.com/services/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', '', '#kilosort', 'Kilosort', 'http://www.icon.com/url/to/icon/image.png', [], msg_starting);
 
 
 mergename = Process_Intan2ConcatenateDat(fbasename);
@@ -35,7 +35,7 @@ if ~exist(datName,'file')
 end
 
 %% TODO INSERT DOWNSAMPLING DAT FILE
-
+Process_LFPfromDat
 
 %% Comment these two lines to get rid of new processing
 eval(['!cp ' datName ' ' datName '_backup']);
@@ -57,12 +57,16 @@ UpdateXml_SpkGrps([mergename '.xml']);
 %end
 
 %% Comment these two lines to get rid of new processing
-KiloSortWrapper;
-eval(['!mv ' datName '_backup ' datName ])
+KiloSort2Wrapper;
+system(['mv ' datName '_backup ' datName ])
 cd('..')
+system(['rm -r ' mergename '-0*'])
+system(['mv ' mergename '/* ./'])
+system(['rm -r ' mergename '/'])
+
 %% Message for slack
-msg_finished = MakeSlackAttachment('New open task [urgent]: <link.to.website>', '', '', '#0000ff', {'KiloSort finished', ['done animal ' fbasename]});
-SendSlackNotification('https://hooks.slack.com/services/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', '', '#kilosort', 'Kilosort', 'http://www.icon.com/url/to/icon/image.png', [], msg_finished);
+%msg_finished = MakeSlackAttachment('New open task [urgent]: <link.to.website>', '', '', '#0000ff', {'KiloSort finished', ['done animal ' fbasename]});
+%SendSlackNotification('https://hooks.slack.com/services/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', '', '#kilosort', 'Kilosort', 'http://www.icon.com/url/to/icon/image.png', [], msg_finished);
 
 %Give writing access to all members of the 'datausers' group
 %cmd = ['chown -R adrien.adrien ' mergename];

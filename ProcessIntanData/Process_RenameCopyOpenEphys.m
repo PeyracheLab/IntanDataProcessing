@@ -14,9 +14,9 @@ function recList = Process_RenameCopyIntan(fbasename,varargin)
 %    OUTPUT:
 %    recList        a cell array containing the names of the new folders
 %
-%    Dependencies:  none
+%    Dependencies:  npy-matlab https://github.com/kwikteam/npy-matlab
 
-% Copyright (C) 2015-2016 Adrien Peyrache
+% Copyright (C) 2015-2020 Adrien Peyrache and Adrian Duszkiewicz
 %
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -27,8 +27,6 @@ processName = [];
 
 %Parameters:
 eraseDir    = 1; %Remove original directories
-cpVideo     = 1; %Move and rename video files from original folders
-videoExt    = {'avi';'mpg';'mov'};
 
 if ~isempty(varargin)
     newfbasename = varargin{1};
@@ -36,39 +34,43 @@ if ~isempty(varargin)
         cpVideo = varargin{2};
     end
 else
+    
+    fbasename = '2020-01-27'
     newfbasename = fbasename;
 end
 
 
 try
     
-folders = dir([fbasename '_*']);
+ %file path for the OpenEphys binary file#
+   
+
+folders = dir(['recording' '*']);
 nRec = length(folders);
 
-date = [];
-startTime = [];
 recName = {};
 durations = [];
+filePath = {};
 
 processName = 'listing folders';
 for ii=1:nRec
     
-    if folders(ii).isdir;
+    if folders(ii).isdir
+        
         fname = folders(ii).name;
         recName = [recName;{fname}];
-        k = strfind(fname,'_');
-        date = [date;str2num(fname(k(end-1)+1:k(end)-1))];
-        startTime = [startTime;str2num(fname(k(end)+1:k(end)+6))];
+        nRec = length(recName);
+        filePath{nRec} = fullfile(fname,'continuous','Rhythm_FPGA-100.0');  
+        
     else
         warning('not a folder')
     end
     
 end
 
-[startTime,ix] = sort(startTime);
-recName = recName(ix);
 nRec = length(recName);
 recList = cell(nRec,1);
+
 
 if length(recList) == 0
     error('No data fodlers detected')
@@ -94,16 +96,16 @@ for ii=1:nRec
         mkdir(newFbase)
     end
     
-    processName = 'moving amplifier.dat';
-    fname = fullfile(recName{ii},'amplifier.dat');
+    processName = 'moving continuous.dat';
+    fname = fullfile(filePath{ii},'continuous.dat');
     if exist(fname,'file')
         movefile(fname,[newFbase '.dat'],'f')
     else
         warning(['Dat file ' fname ' does not exist'])
     end
     
-    processName = 'moving amplifier.xml';
-    fname = fullfile(recName{ii},'amplifier.xml');
+    processName = 'moving continuous.xml';
+    fname = fullfile(filePath{ii},'continuous.xml');
     if exist(fname,'file')
         movefile(fname,[newFbase '.xml'],'f')
     else
@@ -116,75 +118,22 @@ for ii=1:nRec
         end
     end
     
-    processName = 'moving analogin.dat';
-    fname = fullfile(recName{ii},'analogin.dat');
-    if exist(fname,'file')
-        targetFile = fullfile(newFbase,[newFbase '_analogin.dat']);
-        movefile(fname,targetFile,'f')
-    else
-        warning(['Analog-in file ' fname ' does not exist'])
-    end
     
-    processName = 'moving auxiliary.dat';
-    fname = fullfile(recName{ii},'auxiliary.dat');
-    if exist(fname,'file')
-        targetFile = fullfile(newFbase,[newFbase '_auxiliary.dat']);
-        movefile(fname,targetFile,'f')
-    else
-        warning(['Auxiliary file ' fname ' does not exist'])
-    end    
-    
-    processName = 'moving digitalin.dat';
-    fname = fullfile(recName{ii},'digitalin.dat');
-    if exist(fname,'file')
-        targetFile = fullfile(newFbase,[newFbase '_digitalin.dat']);
-        movefile(fname,targetFile,'f')        
-    else
-        warning(['Digital-in file ' fname ' does not exist'])
-    end
         
     processName = 'create Epoch_TS.csv';
-    fname = fullfile(recName{ii}, 'time.dat');
+    fname = fullfile(filePath{ii}, 'timestamps.npy');
     if exist(fname, 'file')
-        fileinfo=dir(fname);
-        num_samples = fileinfo.bytes/4;
-        warning('Considering 20kH sampling rate');
-        durations = [durations;num_samples/20000];
-        targetFile = fullfile(newFbase, [newFbase '_time.dat']);
+        timestamps = readNPY(fname);
+        num_samples = length(timestamps);
+        warning('Considering 30kHz sampling rate');
+        durations = [durations;num_samples/30000];
+        targetFile = fullfile(newFbase, [newFbase '_timestamps.npy']);
         movefile(fname, targetFile, 'f');
     else
         warning(['Timestamp file ' fname ' does not exist']);
     end
         
-    processName = 'moving info.rhd';
-    fname = fullfile(recName{ii},'info.rhd');
-    if exist(fname,'file')
-        targetFile = fullfile(newFbase,[newFbase '_info.rhd']);
-        movefile(fname,targetFile,'f')
-    else
-        warning(['Intan info file ' fname ' does not exist'])
-    end
     
-    processName = 'moving movie file';
-    videoFile   = [];
-    videoIx     = 1;
-    while isempty(videoFile) && videoIx <= length(videoExt)
-        videoFile = dir(fullfile(recName{ii},['*.' videoExt{videoIx}]));
-        if isempty(videoFile)
-            warning(['No ' videoExt{videoIx} ' video file, try next format'])
-        end
-        videoIx = videoIx+1;
-    end
-    if isempty(videoFile)
-        warning('No video file found')
-    elseif length(videoFile) >1
-        warning('There should be one and only one video file here, type ''videoName = xxx'' to enter the proper video name, and then ''return''')
-        
-    else
-        videoName = fullfile(recName{ii},videoFile(1).name);
-        targetFile = fullfile(newFbase,[newFbase '.avi']);
-        movefile(videoName,targetFile,'f')
-    end
     
     processName = 'moving csv file';
     csvFile = dir(fullfile(recName{ii}, '*.csv'));
