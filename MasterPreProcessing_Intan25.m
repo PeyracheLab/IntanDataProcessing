@@ -47,7 +47,7 @@ else
 end
 
 Process_RemoveMedianHighFq(mergename,par.nChannels);
-UpdateXml_SpkGrps([mergename '.xml']);
+UpdateXml_SpkGrps([mergename '.xml'],'nsamples',32);
 
 %%% Uncomment this to rverse to old processing
 %if ~isempty(varargin)
