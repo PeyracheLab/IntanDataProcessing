@@ -80,12 +80,12 @@ sizeInBytes = 2; %
 fxml = fullfile(basepath, [basename '.xml']);
 fsessioninfo = fullfile(basepath,[basename,'.sessionInfo.mat']);
 fdat = fullfile(basepath,[basename,'.dat']);
-flfp = fullfile(basepath,[basename,'.lfp']);
+flfp = fullfile(basepath,[basename,'.eeg']);
 
 
 %If there's already a .lfp file, make sure the user wants to overwrite it
 if exist(flfp,'file')
-    overwrite = input([basename,'.lfp already exists. Overwrite? [Y/N]']);
+    overwrite = input([basename,'.eeg already exists. Overwrite? [Y/N]']);
     switch overwrite
         case {'y','Y'}
             delete(flfp)
@@ -247,5 +247,5 @@ close(h);
 fclose(fidI);
 fclose(fidout);
 
-disp(' ........baseName.lfp file created! Huzzah!')
+disp(' ........baseName.eeg file created! Huzzah!')
 end
