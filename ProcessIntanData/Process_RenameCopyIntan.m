@@ -222,7 +222,7 @@ for ii=1:nRec
     start = start + durations(ii);
     epochs(ii,2) = start;
 end
-dlmwrite('Epoch__TS.csv',epochs,'precision','%.6f');
+dlmwrite('Epoch_TS.csv',epochs,'precision','%.6f');
 
 %end
 
