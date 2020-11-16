@@ -61,9 +61,9 @@ for ii=1:nRec
         startTime = [startTime;str2num(fname(k(end)+1:k(end)+6))];
     else
         warning('not a folder')
-    end
-    
+    end    
 end
+
 
 [startTime,ix] = sort(startTime);
 recName = recName(ix);
@@ -222,7 +222,8 @@ for ii=1:nRec
     start = start + durations(ii);
     epochs(ii,2) = start;
 end
-csvwrite('Epoch_TS.csv',epochs);
+dlmwrite('Epoch__TS.csv',epochs,'precision','%.6f');
+
 %end
 
 catch
