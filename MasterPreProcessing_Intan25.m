@@ -12,7 +12,7 @@
 
 %Adrien Peyrache, 2017
 
-function MasterPreProcessing_Intan2(fbasename,varargin)
+function MasterPreProcessing_Intan25(fbasename,varargin)
 
 % %% Message for slack
 % msg_starting = MakeSlackAttachment('New open task [urgent]: <link.to.website>', '', '', '#ff0000', {'KiloSort starting', ['doing animal ' fbasename]});
@@ -58,11 +58,11 @@ UpdateXml_SpkGrps([mergename '.xml'],'nsamples',32);
 
 %% Comment these two lines to get rid of new processing
 KiloSort25Wrapper;
-system(['mv ' datName '_backup ' datName ])
-cd('..')
-system(['rm -r ' mergename '-0*'])
-system(['mv ' mergename '/* ./'])
-system(['rm -r ' mergename '/'])
+system(['mv ' datName '_backup ' datName ]);
+cd('..');
+system(['rm -r ' mergename '-0*']);
+system(['mv ' mergename '/* ./']);
+system(['rm -r ' mergename '/']);
 
 %% Message for slack
 %msg_finished = MakeSlackAttachment('New open task [urgent]: <link.to.website>', '', '', '#0000ff', {'KiloSort finished', ['done animal ' fbasename]});

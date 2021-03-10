@@ -4,7 +4,7 @@ function Process_ExtractLargeSpk(rez,varargin)
 nFeatures = 3; %Range, power and time
 
 if isempty(varargin)
-    nSamples = 40;
+    nSamples = 32;
 else
     nSamples = varargin{1};
 end

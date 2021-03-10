@@ -35,7 +35,7 @@ if ~exist(datName,'file')
 end
 
 %% TODO INSERT DOWNSAMPLING DAT FILE
-Process_LFPfromDat
+%Process_LFPfromDat
 
 %% Comment these two lines to get rid of new processing
 eval(['!cp ' datName ' ' datName '_backup']);
@@ -46,10 +46,10 @@ else
     error('No xml file!')
 end
 
-Process_RemoveMedianHighFq(mergename,par.nChannels);
+% Process_RemoveMedianHighFq(mergename,par.nChannels);
 UpdateXml_SpkGrps([mergename '.xml']);
 
-%%% Uncomment this to rverse to old processing
+%%% Uncomment this to reverse to old processing
 %if ~isempty(varargin)
 %    Process_KiloSortGrp(mergename,varargin{1})
 %else
@@ -57,7 +57,7 @@ UpdateXml_SpkGrps([mergename '.xml']);
 %end
 
 %% Comment these two lines to get rid of new processing
-KiloSort25Wrapper;
+KiloSort2Wrapper;
 system(['mv ' datName '_backup ' datName ])
 cd('..')
 system(['rm -r ' mergename '-0*'])

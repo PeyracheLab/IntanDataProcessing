@@ -84,17 +84,17 @@ flfp = fullfile(basepath,[basename,'.eeg']);
 
 
 %If there's already a .lfp file, make sure the user wants to overwrite it
-if exist(flfp,'file')
-    overwrite = input([basename,'.eeg already exists. Overwrite? [Y/N]']);
-    switch overwrite
-        case {'y','Y'}
-            delete(flfp)
-        case {'n','N'}
-            return
-        otherwise
-            error('Y or N please...')
-    end
-end
+% if exist(flfp,'file')
+%     overwrite = input([basename,'.eeg already exists. Overwrite? [Y/N]']);
+%     switch overwrite
+%         case {'y','Y'}
+%             delete(flfp)
+%         case {'n','N'}
+%             return
+%         otherwise
+%             error('Y or N please...')
+%     end
+% end
 
 %Check the dat
 if ~exist(fdat,'file')
@@ -132,7 +132,7 @@ end
 
 sessionInfo.lfpSampleRate = outFs;
 sessionInfo.LFPLoPassFreq = lopass;
-save(fsessioninfo,'sessionInfo');  %Save the sessioninfo with the parameters used
+%save(fsessioninfo,'sessionInfo');  %Save the sessioninfo with the parameters used
 
 
 if lopass> outFs/2
@@ -217,6 +217,7 @@ end
 
 
 remainder = nBytes/(sizeInBytes*nbChan) - nbChunks*chunksize;
+
 if ~isempty(remainder)
     fseek(fidI,((ibatch-1)*(nbChan*sizeInBytes*chunksize))-(nbChan*sizeInBytes*ntbuff),'bof');
     dat = fread(fidI,nbChan*(remainder+ntbuff),'int16');
